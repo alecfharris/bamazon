@@ -30,10 +30,6 @@ function displayTable() {
             if(count === res.length){
                 runSearch();
             }
-        // for (var i = 0; i < res.length; i++) {
-        //     console.log("ID: " + res[i].item_id + " || Product Name: " + res[i].product_name + " || Department: " + res[i].department_name +
-        //         " || Price: $" + res[i].price + " || Stock: " + res[i].stock_quantity);
-        // }
     })
 }
 function runSearch() {
@@ -73,8 +69,8 @@ function updateStock(answer) {
             displayTable();
         }
         else{
-            newStock = res[0].stock_quantity - answer.quantity;
-            updateQuery = "UPDATE products SET ? WHERE ?";
+            var newStock = res[0].stock_quantity - answer.quantity;
+            var updateQuery = "UPDATE products SET ? WHERE ?";
             connection.query(updateQuery, [{stock_quantity: newStock}, {item_id: answer.id}], function(err, res) {
                 console.log("New stock: " + newStock);
                 calculateCost(answer);
@@ -84,10 +80,15 @@ function updateStock(answer) {
 }
 
 function calculateCost(answer) {
-    var query = "SELECT price FROM products WHERE ?";
+    var query = "SELECT price, product_sales FROM products WHERE ?";
     connection.query(query, {item_id: answer.id}, function(err, res) {
         var cost = res[0].price * answer.quantity;
         cost = Math.round((cost + 0.00001) * 100) / 100
+        var sales = res[0].product_sales + cost;
+        salesQuery = "UPDATE prodcuts SET ? WHERE ?";
+        connection.query(salesQuery, [{product_sales: sales}, {item_id: answer.id}], function (err, res) {
+            if (err) throw err;
+        })
     console.log("Total: $" + cost + '\n');
 });
     displayTable(); 
