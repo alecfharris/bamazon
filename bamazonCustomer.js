@@ -20,7 +20,7 @@ connection.connect(function (err) {
 });
 function displayTable() {
     connection.query("SELECT * FROM products", function (err, res) {
-        count = 0;
+        var count = 0;
         while (count < res.length){
             console.log("ID: " + res[count].item_id + " || Product Name: " + res[count].product_name + " || Department: " + res[count].department_name +
                 " || Price: $" + res[count].price + " || Stock: " + res[count].stock_quantity);
@@ -85,7 +85,7 @@ function calculateCost(answer) {
         var cost = res[0].price * answer.quantity;
         cost = Math.round((cost + 0.00001) * 100) / 100
         var sales = res[0].product_sales + cost;
-        salesQuery = "UPDATE prodcuts SET ? WHERE ?";
+        salesQuery = "UPDATE products SET ? WHERE ?";
         connection.query(salesQuery, [{product_sales: sales}, {item_id: answer.id}], function (err, res) {
             if (err) throw err;
         })
